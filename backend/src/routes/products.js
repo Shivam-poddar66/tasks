@@ -80,6 +80,24 @@ router.get('/', auth, async (req, res) => {
   }
 });
 
+// Get single product
+router.get('/:id', auth, async (req, res) => {
+  try {
+    const [products] = await pool.query(
+      'SELECT * FROM products WHERE id = ? AND user_id = ?',
+      [req.params.id, req.user.id]
+    );
+
+    if (products.length === 0) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+
+    res.json(products[0]);
+  } catch (err) {
+    res.status(500).json({ message: 'Error fetching product' });
+  }
+});
+
 // Update product
 router.put('/:id', auth, async (req, res) => {
   try {
